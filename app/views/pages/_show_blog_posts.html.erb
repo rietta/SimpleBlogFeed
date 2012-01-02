@@ -1,0 +1,19 @@
+<% unless latest_blog_posts.nil? %>
+
+	The latest <%= pluralize(latest_blog_posts.count, "post") %> from the blog. 
+
+	<ul>
+		<% latest_blog_posts.each do |post| %>
+			<% if nil != post && post.respond_to?(:pubDate) %>
+				<li>
+					<%= link_to post.title, post.link, :target => "_blank" %>
+					(<%= time_ago_in_words(post.pubDate) %> ago via blog feed)
+				</li>
+			<% end %>
+		<% end %>
+	</ul>
+<% else %>
+	<p>
+		<em>No blog posts to show.</em>
+	</p>
+<% end %>

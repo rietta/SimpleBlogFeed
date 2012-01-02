@@ -1,21 +1,27 @@
 <h1>Simple Blog Feed</h1>
 
-<% unless @latest_blog_posts.nil? %>
+<p>
+Ruby supports loading RSS feeds natively without requiring any gem! This example application shows one way to integrate RSS feeds from Blogger into your website.  The full source code is available from the github repository at <%= link_to "rietta/SimpleBlogFeed", "https://github.com/rietta/SimpleBlogFeed" %>.
+</p>
 
-	The latest <%= pluralize(@latest_blog_posts.count, "post") %> from the blog. 
+<h2>Latest Posts from Full Blog</h2>
+<%= render :partial => 'show_blog_posts', :locals => {:latest_blog_posts => @latest_blog_posts} %>
 
-	<ul>
-		<% @latest_blog_posts.each do |post| %>
-			<% if nil != post && post.respond_to?(:pubDate) %>
-				<li>
-					<%= link_to post.title, post.link, :target => "_blank" %>
-					(<%= time_ago_in_words(post.pubDate) %> ago via blog feed)
-				</li>
-			<% end %>
-		<% end %>
-	</ul>
-<% else %>
-	<p>
-		<em>No blog posts to show.</em>
-	</p>
-<% end %>
+
+<h1>Feeds from Labels</h1>
+
+<p>
+	Blogger supports full site, comments-only, and label-specific feeds in Atom and RSS format as per <%= link_to "Blogger Feed URLs", 'http://support.google.com/blogger/bin/answer.py?hl=en&answer=97933' %>. An RSS feed for a label is referenced like this: http://blog.rietta.com/feeds/posts/default/-/Marketing?alt=rss.  The label appears after the -/.  It is case sensitive such that "Marketing" is not the same as "marketing".
+</p>
+
+<h2>Latest Posts from SQL Converter Label</h2>
+<%= render :partial => 'show_blog_posts', :locals => {:latest_blog_posts => @latest_sql_converter_posts} %>
+
+
+<h2>Latest Posts from Marketing Label</h2>
+<%= render :partial => 'show_blog_posts', :locals => {:latest_blog_posts => @latest_marketing_posts} %>
+
+
+
+<hr/>
+&copy; 2012 Rietta Inc. All rights reserved.  The full Ruby on Rails 3.1 source code for this example is available under the terms of the open source BSD License at <%= link_to "rietta/SimpleBlogFeed", "https://github.com/rietta/SimpleBlogFeed" %>.
