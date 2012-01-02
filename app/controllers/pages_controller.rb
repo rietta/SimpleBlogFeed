@@ -1,5 +1,5 @@
 
-# It is important to require the RSS module.  If you leave this off, the blog will not load.
+# It is important to require the RSS module.  If you leave this off, the blog feed will not load.
 require 'rss'
 
 class PagesController < ApplicationController
