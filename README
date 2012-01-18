@@ -1,7 +1,78 @@
 Example Code for Integrate Blog Content with your Rails 3 Site with Pure Ruby Code and RSS
 By Frank Rietta
 
-See the original blog post at http://blog.rietta.com.
+See the original blog post at http://blog.rietta.com/2012/01/integrate-blog-content-with-your-rails.html.
+
+
+-----------------------------------------
+Overview
+-----------------------------------------
+
+Suppose you have built an amazing new website using Ruby on Rails 3. It has tons of features and some great content.  However, one thing it is lacking is a solid blog section. You would like to avoid writing your own blog code in Rails since there are already tons of solid blog applications to choose from - Wordpress, Moveable Type, Typepad, Blogger.com, and more.
+
+I personally like Blogger.com because: 
+- Its run by Google and integrates nicely with Google Analytics and my Google Apps account
+- It supports being run as a subdomain of your website with a simple DNS entry (blog.example.com instead of just exampleblog.blogspot.com)
+- Supports RSS feeds for both the main blog and for labels
+- Posts are indexed quickly for Google Search results
+
+
+-----------------------------------------
+Parsing a Blog RSS Feed in Ruby 1.9
+-----------------------------------------
+
+Ruby supports loading RSS feeds natively without requiring any gem!  To see if yourself, fire up IRB on your command line and run the following:
+require 'rss' 
+blog_posts = RSS::Parser.parse(open('http://blog.rietta.com/feeds/posts/default?alt=rss').read, false).items[0...5]
+
+The RSS module (which is a native part of Ruby) will load the latest five blog posts from this blog into the blog_posts Array object.  Each post in the array is an instance of RSS::Rss::Channel::Item.  The object has quite a few methods and attributes, but the ones of primary interest to us are:
+- :title
+- :description
+- :link
+- :guid
+- :pubDate
+
+-----------------------------------------
+Integrating with a Rails 3 Website
+-----------------------------------------
+
+In your controller:
+
+
+# It is important to require the RSS module.  If you leave this off, the blog feed will not load.
+require 'rss'
+class PagesController < ApplicationController
+  def index
+     begin
+       @latest_blog_posts = RSS::Parser.parse(open('http://blog.rietta.com/feeds/posts/default?alt=rss').read, false).items[0...5]
+     rescue 
+       # Do nothing, just continue.  The view will skip the blog section if the feed is nil.
+       @latest_blog_posts = nil
+     end
+  end
+end
+
+In your view that includes the blog:
+
+
+<h1>Simple Blog Feed</h1>
+<% unless @latest_blog_posts.nil? %>
+ The latest <%= pluralize(@latest_blog_posts.count, "post") %> from the blog.
+ <ul>
+  <% @latest_blog_posts.each do |post| %>
+   <% if nil != post && post.respond_to?(:pubDate) %>
+    <li>
+     <%= link_to post.title, post.link, :target => "_blank" %>
+     (<%= time_ago_in_words(post.pubDate) %> ago via blog feed)
+    </li>
+   <% end %>
+  <% end %>
+ </ul>
+<% else %>
+ <p>
+  <em>No blog posts to show.</em>
+ </p>
+<% end %>
 
 -----------------------------------------
 LICENSE TERMS (BSD License)
